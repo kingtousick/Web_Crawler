@@ -84,23 +84,26 @@ def crawl_news():
             # 뉴스 목록 추출
             if portal == 'naver':
                 news_list = soup.select('.list_news > li')
-                print(f"naver_news_list={news_list}")
+
             elif portal == 'daum':
                 news_list = soup.select('#boxSearchs > div.box_contents > div > ul > li')
 
                 for news in news_list :
                     date_str = news.select_one('.date').text
-                    print(date_str)
+                    split_parts = date_str.split(" · ")
+                    # 오른쪽 부분 추출 (날짜)
+                    date_part = split_parts[1]
+                    # 공백을 제거하여 숫자 부분만 남기기
+                    date_only = date_part.replace(" ", "")
+
                     # 뉴스 날짜에서 월과 일 추출
-                    news_month, news_day = re.findall(r"\d+", date_str)
+                    news_month, news_day = re.findall(r"\d+", date_only)
 
                     # 월과 일을 정수로 변환하여 비교
-                    if int(start_month) <= int(news_month) <= int(end_month) and int(start_day) <= int(news_day) <= int(
-                            end_day):
+                    if int(start_month) <= int(news_month) <= int(end_month) and int(start_day) <= int(news_day) <= int(end_day):
                         filtered_list.append(news)
+                # 날짜 해당하는 List다시 Set
                 news_list = filtered_list
-
-                print(f"다음news_list={news_list}")
             # 페이지별 결과 저장
             for news in news_list:
                 if portal == 'naver':
